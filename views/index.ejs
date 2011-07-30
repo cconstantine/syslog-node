@@ -1,0 +1,14 @@
+<script type="text/javascript">
+  $('.top').after('<p>Test</p>');
+</script>
+
+<div class="top"> Top </top>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://localhost');
+  socket.on('logs', function (data) {
+     console.log(data.toString());
+     $('.top').before(data.toString() + '<br/>');
+  });
+</script>
