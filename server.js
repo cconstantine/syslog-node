@@ -9,7 +9,8 @@ app.configure(function () {
 	app.use(express.static(__dirname + '/public'));
 	app.use(express.cookieParser());
 	app.use(express.bodyParser());
-	app.use(express.session({secret: 'secret', key: 'express.sid'}));
+	app.use(express.session({store: sessionStore,
+			secret: 'secret', key: 'express.sid'}));
 	app.use(app.router);
 
     });
@@ -30,9 +31,8 @@ app.get('/login', function(req, res) {
     });
 
 app.post('/login', function(req, res) {
-	console.log(req)
-	req.session.username = req.params.username;
-	res.redirect('/login');
+	req.session.username = req.body.username;
+	res.redirect(req.body.next);
     });
 
 var parseCookie = require('connect').utils.parseCookie;
@@ -50,10 +50,9 @@ sio.set('authorization', function (data, accept) {
 		if (err) {
 		    // if we cannot grab a session, turn down the connection
 		    accept(err.message, false);
+		} else if(session.username) {
+		    accept(null, true);
 		} else {
-		    // save the session data and accept the connection
-		    data.session = session;
-		    console.log('session: ' + session);
 		    accept("not logged in", false);
 		}
 	    });
