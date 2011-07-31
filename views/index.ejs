@@ -1,14 +1,25 @@
 <script type="text/javascript">
   $('.top').after('<p>Test</p>');
 </script>
-<a href="/login">Login</a>
-<div class="top"> Top </top>
+<div class="filtering" style="display:none;">
+Regex: <input class="regex"></input><br/>
+Lines to keep: <input class="regex"></input><br/>
+</div>
+<div class="top"> Connecting... </top>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/socket.io/socket.io-sessions.js"></script>
-<script>
+<script> 
   var socket = io.connect();
   socket.on('logs', function (data) {
      $('.top').after(data.toString() + '<br/>');
   });
+  socket.on('connect', function() {
+     $('.top').hide();
+     $('.filtering').show();
+});
+  socket.on('error', function (e) {
+     $('.top').show();
+     $('.top').html("Please <a href='/login'>login</a> to view logs")
+   });
+
 </script>
