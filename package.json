@@ -1,0 +1,19 @@
+{
+    "name": "syslog-node"
+  , "version": "0.0.4"
+  , "private": false
+  , "dependencies": {
+      "express": "2.4.3"
+    , "ejs": ">= 0.0.1"
+    , "node-syslog" : ">=1.0.0"
+    , "socket.io" : ">=0.7.7"
+    , "connect-mongo" : ">=0.1.5"
+    , "mongodb" : ">=0.9.6-7"
+  }
+  , "homepage" : 'https://github.com/cconstantine/syslog-node'
+  , "repository" : { 
+      "type" : "git"
+    , "url" : "https://cconstantine@github.com/cconstantine/syslog-node.git"
+  }
+
+}
