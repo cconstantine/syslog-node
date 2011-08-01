@@ -2,24 +2,43 @@
   $('.top').after('<p>Test</p>');
 </script>
 <div class="filtering" style="display:none;">
-Regex: <input class="regex"></input><br/>
-Lines to keep: <input class="regex"></input><br/>
+Regex: <input class="regex" value="<%= regex %>"></input><br/>
 </div>
 <div class="top"> Connecting... </top>
-
+<div class="logs"/>
 <script src="/socket.io/socket.io.js"></script>
-<script> 
+<script>
   var socket = io.connect();
   socket.on('logs', function (data) {
-     $('.top').after(data.toString() + '<br/>');
+     $('.top').after('<div class="log">' + data.toString() + '<br/></div>');
   });
   socket.on('connect', function() {
      $('.top').hide();
      $('.filtering').show();
-});
+
+    var regex = $(".regex").val();
+    console.log(regex);
+
+    socket.emit('regex', regex);
+
+  });
   socket.on('error', function (e) {
      $('.top').show();
      $('.top').html("Please <a href='/login'>login</a> to view logs")
    });
 
+  $(".regex").keyup(function() {
+    var regex = $(".regex").val();
+    console.log(regex);
+
+    socket.emit('regex', regex);
+    $.ajax({
+      type: "POST",
+      url: "/regex",
+      data: {regex : regex}
+      });
+    $('.log').detach();
+    socket.emit('get');
+      
+  });
 </script>

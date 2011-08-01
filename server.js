@@ -1,3 +1,8 @@
+var Syslog  = require('node-syslog');
+Syslog.init("syslog-node",
+	    Syslog.LOG_PID | Syslog.LOG_ODELAY,
+	    Syslog.LOG_LOCAL0);
+
 var net     = require('net');
 var express = require('express');
 var app     = express.createServer();
@@ -37,7 +42,13 @@ sio = io.listen(app);
 
 
 app.get('/', function(req, res){
-	res.render('index.ejs');
+	Syslog.log(Syslog.LOG_INFO, "Visit at '/'");
+	res.render('index.ejs', {regex: req.session.regex || ""});
+    });
+
+app.post('/regex', function(req, res) {
+	req.session.regex = req.body.regex;
+	res.end();
     });
 
 app.get('/login', function(req, res) {
@@ -45,26 +56,46 @@ app.get('/login', function(req, res) {
     });
 
 app.post('/login', function(req, res) {
-	console.log(req.session);
 	req.session.username = req.body.username;
 	res.redirect(req.body.next);
     });
 
 var parseCookie = require('connect').utils.parseCookie;
- 
+
+function last_n(regex, f) {
+    connection.collection('logs', function(err, col) {
+	    s = {}
+	    if (regex) {
+		s['message'] = {$regex : regex};
+	    }
+	    cur = col.find(s).sort(['created_at', 'desc']).limit(100);
+	    cur.each(	f	);
+	});
+}
+
+    
 sio.sockets.on('connection', function(socket) {
-	console.log(1);
-	connection.collection('logs', function(err, col) {
-		console.log(2);
-		cur = col.find().sort(['created_at', 'desc']).limit(10);
-		cur.each(function(err, item) {
-			if (item) {
-			    console.log(3);
-			    console.log(item);
-			    socket.emit('logs', item.message);
-			}
+	
+	function handle_result(err, item) {
+	    if (item) {
+		socket.emit('logs', item.message);
+	    }
+	}
+	
+	socket.on('get', function(args) {
+		socket.get('regex', function (err, regex) {
+			last_n(regex, handle_result);
 		    });
 	    });
+
+	socket.on('regex', function (regex) {
+		socket.set('regex', regex);
+	    });
+
+
+	var regex = socket.handshake.regex;
+	socket.set('regex', regex);
+		    last_n(regex, handle_result);
     });
 
 sio.set('authorization', function (data, accept) {
@@ -81,9 +112,9 @@ sio.set('authorization', function (data, accept) {
 		    // if we cannot grab a session, turn down the connection
 		    accept(err.message, false);
 		} else if(session.username) {
+		    data.regex = session.regex;
 		    accept(null, true);
 		} else {
-		    console.log(session);
 		    accept("not logged in", false);
 		}
 	    });
@@ -103,27 +134,35 @@ sio.set('log level', 1);
 
 /* Syslog server */
 	
-	connection.collection('logs', function(err, col) {
-		var i = [['created_at', -1]];
-		col.ensureIndex(i, function(err, indexName) {
-			console.log("created index: " + indexName);      
-		    })
+connection.collection('logs', function(err, col) {
+	var i = [['created_at', -1]];
+	col.ensureIndex(i, function(err, indexName) {
 	    });
-
-	function write_message (message) {
-	    connection.collection('logs', function(err, col) {
-		    col.insert({message : message,
-                                created_at : new Date()});
-		});
-	}
-
-	var server = net.createServer(function (stream) {
-		stream.setEncoding('utf8');
-		stream.addListener("data", function (data) {
-			write_message(data);
-			sio.sockets.emit('logs', data);
-		    });
-	    });	
-	server.listen(514, 'localhost');
-	/* ************* */
     });
+
+function write_message (message) {
+    connection.collection('logs', function(err, col) {
+	    col.insert({message : message,
+			created_at : new Date()});
+	});
+}
+
+var server = net.createServer(function (stream) {
+	stream.setEncoding('utf8');
+	stream.addListener("data", function (data) {
+		write_message(data);
+		sockets = sio.sockets.sockets;
+		for (var id in sockets) {
+		    var socket = sockets[id];
+		    socket.get('regex', function (err, regex) {
+			    if (!regex || data.search(regex) != -1) {
+				socket.emit('logs', data);
+			    }
+			});
+		}
+	    });
+    });	
+server.listen(514, 'localhost');
+/* ************* */
+
+});
