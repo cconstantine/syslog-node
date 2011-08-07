@@ -45,7 +45,7 @@ sio = io.listen(app);
 
 app.get('/', function(req, res){
 	Syslog.log(Syslog.LOG_INFO, "Visit at '/'");
-	res.render('index.ejs', {regex: req.session.regex || ""});
+	res.render('index.ejs', {regex: req.session.regex || "", username : req.session.username});
 	});
 
 app.post('/regex', function(req, res) {
@@ -53,6 +53,11 @@ app.post('/regex', function(req, res) {
 	res.end();
   });
 
+app.post('/logout', function(req, res) {
+	delete req.session.username;
+	res.redirect(req.body.next);
+});
+  
 app.get('/login', function(req, res) {
 	res.render('login.ejs');
   });
@@ -61,32 +66,23 @@ app.post('/login', function(req, res) {
   var next = "/login";
   var username = req.body.username;
   var password = req.body.password;
-  console.log(1);
   connection.collection('users', function(err, col) {
-    console.log(2);
     var done = false;
     col.find({username : username}).each(function(err, item) {
-      console.log(err);
-      console.log(item);
-      console.log(3);
       if(done) {
-        console.log(4);
         res.redirect(next);
         return;
       } else if (item) {
-        console.log(5);
         if (bcrypt.compare_sync(password, item.password)) {
           next = req.body.next;
    	      req.session.username = req.body.username;
           done = true;
           return;
 	      } else {
-          console.log(6);
           done = true;
           return;
 	      }
   	  } else if (username == "admin") {
-        console.log(7);
   	    hash = bcrypt.encrypt_sync(password, bcrypt.gen_salt_sync(10));
   	    col.update({username : username}, {username : username, password :  hash}, { upsert : true});
  	      req.session.username = req.body.username;
@@ -94,7 +90,6 @@ app.post('/login', function(req, res) {
         res.redirect(next);
  	      done = true;
   	  }
-      console.log(8);
     });
 	});
 });

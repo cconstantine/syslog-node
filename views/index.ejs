@@ -2,18 +2,31 @@
   $('.top').after('<p>Test</p>');
 </script>
 <div class="filtering" style="display:none;">
-Regex: <input class="regex" value="<%= regex %>"></input><br/>
+  Regex: <input class="regex" value="<%= regex %>"></input>
+  <br/>
 </div>
-<div class="top"> Connecting... </top>
+<% if(!username) {%>
+  <div class="login">
+    Please <a href='/login'>login</a> to view logs
+  </div>
+<% } else { %>
+  <div class="login">
+    <form action="logout" method="post">
+      <input type="hidden" name="next" value="/" />
+      <input type="submit" name="username" value="Logout"/>
+    </form>
+  </div>
+<% } %>
+<div class="errors"> </div>
 <div class="logs"/>
 <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io.connect();
   socket.on('logs', function (data) {
-     $('.top').after('<div class="log">' + data.toString() + '<br/></div>');
+     $('.logs').after('<div class="log">' + data.toString() + '<br/></div>');
   });
   socket.on('connect', function() {
-     $('.top').hide();
+     $('.errors').hide();
      $('.filtering').show();
 
     var regex = $(".regex").val();
@@ -22,10 +35,6 @@ Regex: <input class="regex" value="<%= regex %>"></input><br/>
     socket.emit('regex', regex);
 
   });
-  socket.on('error', function (e) {
-     $('.top').show();
-     $('.top').html("Please <a href='/login'>login</a> to view logs")
-   });
 
   $(".regex").keyup(function() {
     var regex = $(".regex").val();
