@@ -1,12 +1,13 @@
 {
     "name": "syslog-node"
-  , "version": "0.0.5"
+  , "version": "0.0.6"
   , "private": false
   , "dependencies": {
-      "express": "2.4.3"
+      "express": ">=2.4"
     , "ejs": ">= 0.0.1"
     , "node-syslog" : ">=1.0.0"
     , "socket.io" : ">=0.7.7"
+    , "connect" : ">1.6"
     , "connect-mongo" : ">=0.1.5"
     , "mongodb" : ">=0.9.6-7"
   }

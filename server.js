@@ -15,7 +15,7 @@ var mongo_config = {host: 'localhost', port: 27017, db: 'syslog-node'}
 
 var db = new mongodb.Db(mongo_config.db,
 		     new mongodb.Server("127.0.0.1", 27017),
-		     {native_parser:true});
+		     {native_parser:false});
 
 
 
