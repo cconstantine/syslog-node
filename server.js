@@ -9,6 +9,7 @@ var app     = express.createServer();
 var io      = require('socket.io');
 var mongodb = require('mongodb');
 var MongoStore = require('connect-mongo');
+var bcrypt = require('bcrypt');
 
 var mongo_config = {host: 'localhost', port: 27017, db: 'syslog-node'}
 
@@ -33,53 +34,91 @@ app.configure(function () {
 	app.use(express.static(__dirname + '/public'));
 	app.use(express.cookieParser());
 	app.use(express.bodyParser());
-	app.use(express.session({store: sessionStore,
-			secret: 'secret', key: 'express.sid'}));
+	app.use(express.session({
+	  store: sessionStore,
+		secret: 'secret', key: 'express.sid'
+	}));
 	app.use(app.router);
-
-    }); 
+  }); 
 sio = io.listen(app);
 
 
 app.get('/', function(req, res){
 	Syslog.log(Syslog.LOG_INFO, "Visit at '/'");
 	res.render('index.ejs', {regex: req.session.regex || ""});
-    });
+	});
 
 app.post('/regex', function(req, res) {
 	req.session.regex = req.body.regex;
 	res.end();
-    });
+  });
 
 app.get('/login', function(req, res) {
 	res.render('login.ejs');
-    });
+  });
 
 app.post('/login', function(req, res) {
-	req.session.username = req.body.username;
-	res.redirect(req.body.next);
+  var next = "/login";
+  var username = req.body.username;
+  var password = req.body.password;
+  console.log(1);
+  connection.collection('users', function(err, col) {
+    console.log(2);
+    var done = false;
+    col.find({username : username}).each(function(err, item) {
+      console.log(err);
+      console.log(item);
+      console.log(3);
+      if(done) {
+        console.log(4);
+        res.redirect(next);
+        return;
+      } else if (item) {
+        console.log(5);
+        if (bcrypt.compare_sync(password, item.password)) {
+          next = req.body.next;
+   	      req.session.username = req.body.username;
+          done = true;
+          return;
+	      } else {
+          console.log(6);
+          done = true;
+          return;
+	      }
+  	  } else if (username == "admin") {
+        console.log(7);
+  	    hash = bcrypt.encrypt_sync(password, bcrypt.gen_salt_sync(10));
+  	    col.update({username : username}, {username : username, password :  hash}, { upsert : true});
+ 	      req.session.username = req.body.username;
+        next = req.body.next;
+        res.redirect(next);
+ 	      done = true;
+  	  }
+      console.log(8);
     });
+	});
+});
 
 var parseCookie = require('connect').utils.parseCookie;
 
 function last_n(regex, f) {
-    connection.collection('logs', function(err, col) {
-	    s = {}
-	    if (regex) {
-		s['message'] = {$regex : regex};
-	    }
-	    cur = col.find(s).sort(['created_at', 'desc']).limit(100);
-	    cur.each(	f	);
-	});
+  connection.collection('logs', function(err, col) {
+    s = {}
+    if (regex) {
+	    s['message'] = {$regex : regex};
+        }
+        cur = col.find(s).sort(['created_at', 'desc']).limit(100);
+        cur.each(	f	);
+    });
 }
 
     
 sio.sockets.on('connection', function(socket) {
 	
 	function handle_result(err, item) {
-	    if (item) {
-		socket.emit('logs', item.message);
-	    }
+	  if (item) {
+	  	socket.emit('logs', item.message);
+	  }
 	}
 	
 	socket.on('get', function(args) {

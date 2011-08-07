@@ -1,6 +1,6 @@
 {
     "name": "syslog-node"
-  , "version": "0.0.4"
+  , "version": "0.0.5"
   , "private": false
   , "dependencies": {
       "express": "2.4.3"
@@ -10,7 +10,8 @@
     , "connect-mongo" : ">=0.1.5"
     , "mongodb" : ">=0.9.6-7"
   }
-  , "homepage" : 'https://github.com/cconstantine/syslog-node'
+  , "homepage" : "https://github.com/cconstantine/syslog-node"
+  , "description" : "A syslog server and realtime web view of syslog messages"
   , "repository" : { 
       "type" : "git"
     , "url" : "https://cconstantine@github.com/cconstantine/syslog-node.git"
