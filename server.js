@@ -143,7 +143,6 @@ sio.sockets.on('connection', function(socket) {
 	}
 	
 	socket.on('get', function(args) {
-		console.log(args);
 		socket.get('regex', function (err, regex) {
 		  last_n(regex, args.lines, handle_result);
 	  });

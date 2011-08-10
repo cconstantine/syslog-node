@@ -27,7 +27,6 @@
     var lines = parseInt($('.lines').val()) || 100;
     lines = lines - 1;
      $('.logs').after('<div class="log">' + data.toString() + '<br/></div>');
-     console.log(lines);
      $(".log:gt(" + lines + ")").detach();
   });
   
@@ -37,7 +36,6 @@
 
     var regex = $(".regex").val();
     var lines = parseInt($('.lines').val()) || 100;
-    console.log(regex);
 
     socket.emit('get', {regex : regex, lines : lines});
 
@@ -46,7 +44,6 @@
   $(".regex,.lines").keyup(function() {
     var regex = $(".regex").val();
     var lines = parseInt($('.lines').val()) || 100;
-    console.log(regex);
 
     socket.emit('regex', regex);
     $.ajax({
