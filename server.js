@@ -45,7 +45,9 @@ sio = io.listen(app);
 
 app.get('/', function(req, res){
 	Syslog.log(Syslog.LOG_INFO, "Visit at '/'");
-	res.render('index.ejs', {regex: req.session.regex || "", username : req.session.username});
+	res.render('index.ejs', {regex: req.session.regex || "",
+	                         username : req.session.username,
+	                         lines : req.session.lines || "100"});
 	});
 
 app.post('/regex', function(req, res) {
@@ -117,19 +119,22 @@ app.post('/login', function(req, res) {
 
 var parseCookie = require('connect').utils.parseCookie;
 
-function last_n(regex, f) {
+function last_n(regex, n, f) {
   connection.collection('logs', function(err, col) {
     s = {}
     if (regex) {
 	    s['message'] = {$regex : regex};
-        }
-        cur = col.find(s).sort({created_at : -1}).limit(100);
-        cur.each(	f	);
-    });
+    }
+    cur = col.find(s).sort({created_at : -1}).limit(n);
+    cur.each(f);
+  });
 }
 
     
 sio.sockets.on('connection', function(socket) {
+
+	var regex = socket.handshake.regex;
+	socket.set('regex', regex);
 	
 	function handle_result(err, item) {
 	  if (item) {
@@ -138,20 +143,17 @@ sio.sockets.on('connection', function(socket) {
 	}
 	
 	socket.on('get', function(args) {
+		console.log(args);
 		socket.get('regex', function (err, regex) {
-			last_n(regex, handle_result);
-		    });
-	    });
+		  last_n(regex, args.lines, handle_result);
+	  });
+	});
 
 	socket.on('regex', function (regex) {
 		socket.set('regex', regex);
-	    });
+	});
 
-
-	var regex = socket.handshake.regex;
-	socket.set('regex', regex);
-		    last_n(regex, handle_result);
-    });
+});
 
 sio.set('authorization', function (data, accept) {
     // check if there's a cookie header
@@ -208,15 +210,15 @@ var server = net.createServer(function (stream) {
 		write_message(data);
 		sockets = sio.sockets.sockets;
 		for (var id in sockets) {
-		    var socket = sockets[id];
-		    socket.get('regex', function (err, regex) {
-			    if (!regex || data.search(regex) != -1) {
-				socket.emit('logs', data);
-			    }
+		  var socket = sockets[id];
+		  socket.get('regex', function (err, regex) {
+			  if (!regex || data.search(regex) != -1) {
+				  socket.emit('logs', data);
+			  }
 			});
 		}
-	    });
-    });	
+	});
+});	
 server.listen(514, 'localhost');
 /* ************* */
 

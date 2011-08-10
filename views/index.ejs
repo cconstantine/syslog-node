@@ -1,8 +1,6 @@
-<script type="text/javascript">
-  $('.top').after('<p>Test</p>');
-</script>
 <div class="filtering" style="display:none;">
   Regex: <input class="regex" value="<%= regex %>"></input>
+  Lines: <input class="lines" value="<%= lines %>"></input>
   <br/>
 </div>
 <% if(!username) {%>
@@ -21,26 +19,33 @@
   <% } %>
 <% } %>
 <div class="errors"> </div>
-<div class="logs"/>
+<div class="logs"></div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io.connect();
   socket.on('logs', function (data) {
+    var lines = parseInt($('.lines').val()) || 100;
+    lines = lines - 1;
      $('.logs').after('<div class="log">' + data.toString() + '<br/></div>');
+     console.log(lines);
+     $(".log:gt(" + lines + ")").detach();
   });
+  
   socket.on('connect', function() {
      $('.errors').hide();
      $('.filtering').show();
 
     var regex = $(".regex").val();
+    var lines = parseInt($('.lines').val()) || 100;
     console.log(regex);
 
-    socket.emit('regex', regex);
+    socket.emit('get', {regex : regex, lines : lines});
 
   });
 
-  $(".regex").keyup(function() {
+  $(".regex,.lines").keyup(function() {
     var regex = $(".regex").val();
+    var lines = parseInt($('.lines').val()) || 100;
     console.log(regex);
 
     socket.emit('regex', regex);
@@ -50,7 +55,7 @@
       data: {regex : regex}
       });
     $('.log').detach();
-    socket.emit('get');
+    socket.emit('get', {regex : regex, lines : lines});
       
   });
 </script>
