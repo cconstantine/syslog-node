@@ -53,6 +53,27 @@ app.post('/regex', function(req, res) {
 	res.end();
   });
 
+app.get('/adduser', function(req, res) {
+	if (req.session.username == "admin") {
+  	res.render('adduser.ejs');
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.post('/adduser', function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+
+	if (req.session.username == "admin") {
+    connection.collection('users', function(err, col) {
+  	  hash = bcrypt.encrypt_sync(password, bcrypt.gen_salt_sync(10));
+      col.update({username : username}, {username : username, password :  hash}, { upsert : true});
+    });
+  }
+  res.redirect("/");
+});
+
 app.post('/logout', function(req, res) {
 	delete req.session.username;
 	res.redirect(req.body.next);
@@ -102,7 +123,7 @@ function last_n(regex, f) {
     if (regex) {
 	    s['message'] = {$regex : regex};
         }
-        cur = col.find(s).sort(['created_at', 'desc']).limit(100);
+        cur = col.find(s).sort({created_at : -1}).limit(100);
         cur.each(	f	);
     });
 }

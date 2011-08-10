@@ -16,6 +16,9 @@
       <input type="submit" name="username" value="Logout"/>
     </form>
   </div>
+  <% if (username == "admin") { %>
+    <a href="/adduser">Add a User</a>
+  <% } %>
 <% } %>
 <div class="errors"> </div>
 <div class="logs"/>
