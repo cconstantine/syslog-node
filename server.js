@@ -108,7 +108,6 @@ sio.sockets.on('connection', function(socket) {
 	}
 	
 	socket.on('get', function(args) {
-		console.log(args);
 		socket.get('regex', function (err, regex) {
 		  last_n(regex, args.lines, handle_result);
 	  });
@@ -171,16 +170,23 @@ function write_message (message) {
 
 var server = net.createServer(function (stream) {
 	stream.setEncoding('utf8');
-	stream.addListener("data", function (data) {
-		write_message(data);
-		sockets = sio.sockets.sockets;
-		for (var id in sockets) {
-		  var socket = sockets[id];
-		  socket.get('regex', function (err, regex) {
-			  if (!regex || data.search(regex) != -1) {
-				  socket.emit('logs', data);
-			  }
-			});
+	stream.addListener("data", function (datagram) {
+	  var datas = datagram.split("\n");
+	  for (var data in datas) {
+	    data = datas[data];
+	    if (data.length == 0) {
+	      continue;
+	    }
+		  write_message(data);
+		  sockets = sio.sockets.sockets;
+		  for (var id in sockets) {
+		    var socket = sockets[id];
+		    socket.get('regex', function (err, regex) {
+			    if (!regex || data.search(regex) != -1) {
+				    socket.emit('logs', data);
+			    }
+			  });
+		  }
 		}
 	});
 });	
