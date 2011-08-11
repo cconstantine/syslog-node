@@ -9,7 +9,9 @@ var app     = express.createServer();
 var io      = require('socket.io');
 var mongodb = require('mongodb');
 var MongoStore = require('connect-mongo');
-var bcrypt = require('bcrypt');
+
+var pamlib = require('pam.node');
+var pam    = new pamlib.PAM();
 
 var mongo_config = {host: 'localhost', port: 27017, db: 'syslog-node'}
 
@@ -55,27 +57,6 @@ app.post('/regex', function(req, res) {
 	res.end();
   });
 
-app.get('/adduser', function(req, res) {
-	if (req.session.username == "admin") {
-  	res.render('adduser.ejs');
-  } else {
-    res.redirect("/");
-  }
-});
-
-app.post('/adduser', function(req, res) {
-  var username = req.body.username;
-  var password = req.body.password;
-
-	if (req.session.username == "admin") {
-    connection.collection('users', function(err, col) {
-  	  hash = bcrypt.encrypt_sync(password, bcrypt.gen_salt_sync(10));
-      col.update({username : username}, {username : username, password :  hash}, { upsert : true});
-    });
-  }
-  res.redirect("/");
-});
-
 app.post('/logout', function(req, res) {
 	delete req.session.username;
 	res.redirect(req.body.next);
@@ -89,32 +70,16 @@ app.post('/login', function(req, res) {
   var next = "/login";
   var username = req.body.username;
   var password = req.body.password;
-  connection.collection('users', function(err, col) {
-    var done = false;
-    col.find({username : username}).each(function(err, item) {
-      if(done) {
-        res.redirect(next);
-        return;
-      } else if (item) {
-        if (bcrypt.compare_sync(password, item.password)) {
-          next = req.body.next;
-   	      req.session.username = req.body.username;
-          done = true;
-          return;
-	      } else {
-          done = true;
-          return;
-	      }
-  	  } else if (username == "admin") {
-  	    hash = bcrypt.encrypt_sync(password, bcrypt.gen_salt_sync(10));
-  	    col.update({username : username}, {username : username, password :  hash}, { upsert : true});
- 	      req.session.username = req.body.username;
-        next = req.body.next;
-        res.redirect(next);
- 	      done = true;
-  	  }
-    });
-	});
+  
+  pam.authenticate('syslog-node', username, password, function(success) {
+    if (success) {
+      req.session.username = req.body.username;
+      next = req.body.next;
+      res.redirect(next);
+    } else {
+      res.redirect(next);    
+    }
+  });
 });
 
 var parseCookie = require('connect').utils.parseCookie;

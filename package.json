@@ -10,7 +10,7 @@
     , "connect" : ">1.6"
     , "connect-mongo" : ">=0.1.5"
     , "mongodb" : ">=0.9.6-7"
-    , "bcrypt" : ">=0.2.4"
+    , "pam" : ">=0.1.0"
   }
   , "homepage" : "https://github.com/cconstantine/syslog-node"
   , "description" : "A syslog server and realtime web view of syslog messages"
