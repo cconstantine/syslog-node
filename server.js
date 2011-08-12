@@ -86,12 +86,12 @@ var parseCookie = require('connect').utils.parseCookie;
 
 function last_n(regex, n, f) {
   connection.collection('logs', function(err, col) {
-    s = {}
+    s = {};
     if (regex) {
 	    s['message'] = {$regex : regex};
     }
     cur = col.find(s).sort({created_at : -1}).limit(n);
-    cur.each(f);
+    f(cur);
   });
 }
 
@@ -101,11 +101,17 @@ sio.sockets.on('connection', function(socket) {
 	var regex = socket.handshake.regex;
 	socket.set('regex', regex);
 	
-	function handle_result(err, item) {
-	  if (item) {
-	  	socket.emit('logs', item.message);
-	  }
-	}
+	function handle_result(cur) {
+	  var items = [];
+	  cur.each(function(err, item) {
+            if (item) {
+              items.unshift(item.created_at);
+	    } else {
+		socket.emit('logs', items);
+	    }
+	  });
+
+        }
 	
 	socket.on('get', function(args) {
 		socket.get('regex', function (err, regex) {
@@ -183,7 +189,7 @@ var server = net.createServer(function (stream) {
 		    var socket = sockets[id];
 		    socket.get('regex', function (err, regex) {
 			    if (!regex || data.search(regex) != -1) {
-				    socket.emit('logs', data);
+				    socket.emit('logs', [data]);
 			    }
 			  });
 		  }

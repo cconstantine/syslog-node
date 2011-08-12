@@ -26,7 +26,10 @@
   socket.on('logs', function (data) {
     var lines = parseInt($('.lines').val()) || 100;
     lines = lines - 1;
-     $('.logs').after('<div class="log">' + data.toString() + '<br/></div>');
+    console.log(data);
+    for(var i in data) {
+       $('.logs').after('<div class="log">' + data[i].toString() + '<br/></div>');
+     }
      $(".log:gt(" + lines + ")").detach();
   });
   
