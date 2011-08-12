@@ -10,10 +10,9 @@ var io      = require('socket.io');
 var mongodb = require('mongodb');
 var MongoStore = require('connect-mongo');
 
-var pamlib = require('pam.node');
-var pam    = new pamlib.PAM();
+var unixlib = require('unixlib');
 
-var mongo_config = {host: 'localhost', port: 27017, db: 'syslog-node'}
+var mongo_config = {host: 'localhost', port: 27017, db: 'syslog-node'};
 
 var db = new mongodb.Db(mongo_config.db,
 		     new mongodb.Server("127.0.0.1", 27017),
@@ -71,7 +70,7 @@ app.post('/login', function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
   
-  pam.authenticate('syslog-node', username, password, function(success) {
+  unixlib.pamauth('syslog-node', username, password, function(success) {
     if (success) {
       req.session.username = req.body.username;
       next = req.body.next;
@@ -105,7 +104,7 @@ sio.sockets.on('connection', function(socket) {
 	  var items = [];
 	  cur.each(function(err, item) {
             if (item) {
-              items.unshift(item.created_at);
+              items.unshift(item.message);
 	    } else {
 		socket.emit('logs', items);
 	    }

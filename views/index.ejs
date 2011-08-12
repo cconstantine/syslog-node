@@ -26,7 +26,6 @@
   socket.on('logs', function (data) {
     var lines = parseInt($('.lines').val()) || 100;
     lines = lines - 1;
-    console.log(data);
     for(var i in data) {
        $('.logs').after('<div class="log">' + data[i].toString() + '<br/></div>');
      }
