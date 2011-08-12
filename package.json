@@ -1,6 +1,6 @@
 {
     "name": "syslog-node"
-  , "version": "0.0.6"
+  , "version": "0.1.0"
   , "private": false
   , "dependencies": {
       "express": ">=2.4"
