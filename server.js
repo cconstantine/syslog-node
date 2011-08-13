@@ -1,3 +1,5 @@
+#/usr/bin/env node
+
 var Syslog  = require('node-syslog');
 Syslog.init("syslog-node",
 	    Syslog.LOG_PID | Syslog.LOG_ODELAY,
@@ -195,7 +197,7 @@ var server = net.createServer(function (stream) {
 		}
 	});
 });	
-server.listen(514, 'localhost');
+server.listen(514, '0.0.0.0');
 /* ************* */
 
 });
