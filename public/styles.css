@@ -1,14 +1,17 @@
 body {
-    background: #eeeeee;
-    font-family: “Trebuchet MS”, Verdana, Arial, serif;
+    background: #c9dce4;
+#    font-family: “Trebuchet MS”, Verdana, Arial, serif;
 }
 
-.log {
-#    background: #dddddd;
-    margin-top: 15px;
+.elem {
+    margin-top: 3px;
+    background: #9ebdc8;
+    border-radius: 3px;
+    padding: 3px;
+    font-size: small;
 }
 
 
 .log:hover {
-    background: #cccccc;
+    background: #bfdae4;
 } 

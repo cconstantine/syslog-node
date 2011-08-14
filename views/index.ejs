@@ -1,13 +1,14 @@
-<div class="filtering" style="display:none;">
-  Regex: <input class="regex" value="<%= regex %>"></input>
-  Lines: <input class="lines" value="<%= lines %>"></input>
-  <br/>
-</div>
-<% if(!username) {%>
+<div class="elem">
+  <div class="filtering" style="display:none;">
+    Regex: <input class="regex" value="<%= regex %>"></input>
+    Lines: <input class="lines" value="<%= lines %>"></input>
+    <br/>
+  </div>
+  <% if(!username) {%>
   <div class="login">
     Please <a href='/login'>login</a> to view logs
   </div>
-<% } else { %>
+  <% } else { %>
   <div class="login">
     <form action="logout" method="post">
       <input type="hidden" name="next" value="/" />
@@ -15,9 +16,11 @@
     </form>
   </div>
   <% if (username == "admin") { %>
-    <a href="/adduser">Add a User</a>
+  <a href="/adduser">Add a User</a>
   <% } %>
-<% } %>
+  <% } %>
+</div>
+
 <div class="errors"> </div>
 <div class="logs"></div>
 <script src="/socket.io/socket.io.js"></script>
@@ -27,7 +30,7 @@
     var lines = parseInt($('.lines').val()) || 100;
     lines = lines - 1;
     for(var i in data) {
-       $('.logs').after('<div class="log">' + data[i].toString() + '<br/></div>');
+       $('.logs').after('<div class="log elem">' + data[i].toString() + '<br/></div>');
      }
      $(".log:gt(" + lines + ")").detach();
   });
