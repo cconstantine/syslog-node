@@ -71,15 +71,17 @@ db.open(function(err, connection) {
         var password = req.body.password;
   
         unixlib.pamauth('syslog-node', username, password, function(success) {
-            if (success) {
-              req.session.username = req.body.username;
-              next = req.body.next;
-              res.redirect(next);
-            } else {
-              res.redirect(next);    
-            }
-          });
-      });
+		if (success) {
+		    req.session.username = req.body.username;
+		    next = req.body.next;
+		    console.log("Login worked");
+		    res.redirect(next);
+		} else {
+		    console.log("Login Failed");
+		    res.redirect(next);    
+		}
+	    });
+	});
     
     var parseCookie = require('connect').utils.parseCookie;
     
