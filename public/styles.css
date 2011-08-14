@@ -1,0 +1,14 @@
+body {
+    background: #eeeeee;
+    font-family: “Trebuchet MS”, Verdana, Arial, serif;
+}
+
+.log {
+#    background: #dddddd;
+    margin-top: 15px;
+}
+
+
+.log:hover {
+    background: #cccccc;
+} 
