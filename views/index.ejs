@@ -1,28 +1,35 @@
-<div class="elem">
-  <div class="filtering" style="display:none;">
-    Regex: <input class="regex" value="<%= regex %>"></input>
-    Lines: <input class="lines" value="<%= lines %>"></input>
-    <br/>
-  </div>
+<header class="main">
+<h1><a href="#">syslog-node</a></h1>
+</header>
+
+
+  
+
   <% if(!username) {%>
-  <div class="login">
+  <div class="loginText">
     Please <a href='/login'>login</a> to view logs
   </div>
   <% } else { %>
-  <div class="login">
-    <form action="logout" method="post">
+  <div class="regexDialog" type="hidden">
+    <p>Regex: <input class="regex" value="<%= regex %>"></input>
+   Lines: <input class="lines" value="<%= lines %>"></input></p>
+   
+  </div>
+  <div class="logout">
+    <form id="logout" class="logout" action="logout" method="post">
       <input type="hidden" name="next" value="/" />
-      <input type="submit" name="username" value="Logout"/>
+    	<a href="#" onclick="$('.logout').submit()">Logout</a>
     </form>
   </div>
-  <% if (username == "admin") { %>
-  <a href="/adduser">Add a User</a>
-  <% } %>
-  <% } %>
-</div>
+  
+
+
+
 
 <div class="errors"> </div>
+<div class="mainText">
 <div class="logs"></div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io.connect();
@@ -61,3 +68,6 @@
       
   });
 </script>
+</div>
+<footer><h3>Design by <a href="#">Caerulean Hue</a></h3></footer>
+<% } %>

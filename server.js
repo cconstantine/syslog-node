@@ -69,8 +69,8 @@ db.open(function(err, connection) {
         var next = "/login";
         var username = req.body.username;
         var password = req.body.password;
-  
-        unixlib.pamauth('syslog-node', username, password, function(success) {
+
+        unixlib.pamauth('chkpasswd', username, password, function(success) {
 		if (success) {
 		    req.session.username = req.body.username;
 		    next = req.body.next;

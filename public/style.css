@@ -1,0 +1,148 @@
+body {
+	background-color: #e6e9ea;
+	}
+
+ .loginText, form {
+	text-align: center;
+	width: 300px;
+	}
+	
+h1	{
+	color: #777777;
+	text-shadow: 0 -1px 0 #143d47;
+	font-size: 40px;
+	}
+h3 {
+	color: #777777;
+	font-family: Consolas,'Lucida Console','DejaVu Sans Mono',monospace;
+	font-weight: normal;
+	font-size: 10px;
+	}	
+.mainText	{
+	min-width: 500px;
+	width: 80%;
+	text-align: left;
+	}
+.errors	{
+	min-width: 500px;
+	width: 80%;
+	text-align: center;
+	margin-right: auto;
+	margin-left: auto;
+	}	
+.main	{
+	text-align: center;
+	}
+	
+form	{
+	text-align: center;
+	}
+	
+.inputArea	{
+	background-color: #ffffff;
+	border: 2px solid #dcdcdc;
+	width: 300px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px
+	-webkit-box-shadow: 0 3px 15px #143d47;
+	-moz-box-shadow: 0 3px 15px #143d47;
+	box-shadow: 0 3px 15px #143d47;
+	padding-bottom: 10px;
+	}
+	
+a 	{
+	text-decoration: none;
+	color: #777777;
+	}	
+
+.mainText, .errors {
+	border: 2px solid #dcdcdc;
+	background-color: #ffffff;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px
+	-webkit-box-shadow: 0 3px 15px #143d47;
+	-moz-box-shadow: 0 3px 15px #143d47;
+	box-shadow: 0 3px 15px #143d47;
+	color: #777777;
+	}
+	
+.mainText, .main, .loginText, form, .inputArea, .regexDialog {
+	font-family: Consolas,'Lucida Console','DejaVu Sans Mono',monospace;
+	margin-left: auto;
+	margin-right: auto;
+	}
+	
+
+
+.log.elem {
+	padding: 5px;
+	
+	}
+	
+input {
+	margin-left: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+		}
+
+.log.elem:hover {
+	background-color: #f0f6f8;
+	}
+		
+.regexDialog	{
+	width:	80%;
+	min-width: 500px;
+	text-align: center;
+	color: #777777;
+	}
+	
+form.logout {
+	text-align: right;
+	width: 80%;
+	padding-bottom: 5px;
+	}
+
+footer {
+	text-align: left;
+	width: 80%;
+	margin-right: auto;
+	margin-left: auto;
+	padding-top: 10px;
+	}	
+	
+.myButton {
+	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #e6e9ea) );
+	background:-moz-linear-gradient( center top, #ededed 5%, #e6e9ea 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+	background-color:#ededed;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	border:1px solid #dcdcdc;
+	display:inline-block;
+	color:#777777;
+	font-family:Consolas,'Lucida Console','DejaVu Sans Mono',monospace;
+	font-size:15px;
+	font-weight:bold;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #ffffff;
+}
+.myButton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+	background-color:#dfdfdf;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+		
